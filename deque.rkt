@@ -9,6 +9,8 @@
 
 (define (empty? deque) (null? (front deque)))
 
+(define (one? deque) (null? (mcdr (mcar (front deque)))))
+
 (define (print deque)
   (define (collect deque result)
     (if (null? deque)
@@ -39,18 +41,24 @@
            (set-rear! deque new-pair))))
   (print deque))
 
-(define (delete-rear! deque)
-  (if (empty? deque)
-      (error 'empty)
-      (begin
-        (set-mcdr! (mcar (mcdr (rear deque))) null)
-        (set-rear! deque (mcdr (rear deque)))
-        (print deque))))
-
 (define (delete-front! deque)
-  (if (empty? deque)
-      (error 'empty)
-      (begin
-        (set-mcdr! (mcdr (mcar (front deque))) null)
-        (set-front! deque (mcdr (mcar (front deque))))
-        (print deque))))
+  (cond ((empty? deque)
+         (error "DELETE-FRONT called with an empty queue"))
+        ((one? deque)
+         (set-front! deque null)
+         (set-rear! deque null))
+        (else
+         (set-mcdr! (mcdr (mcar (front deque))) null)
+         (set-front! deque (mcdr (mcar (front deque))))))
+  (print deque))
+
+(define (delete-rear! deque)
+  (cond ((empty? deque)
+         (error "DELETE-REAR called with an empty queue"))
+        ((one? deque)
+         (set-front! deque null)
+         (set-rear! deque null))
+        (else
+         (set-mcdr! (mcar (mcdr (rear deque))) null)
+         (set-rear! deque (mcdr (rear deque)))))
+  (print deque))
